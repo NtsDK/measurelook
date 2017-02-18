@@ -78,7 +78,6 @@ See the License for the specific language governing permissions and
             setAttr(getEl('chartDataSelector'), 'size', database.measuredParams.length);
             
             onSettingsChange();
-//            FileUtils.json2File(database, "polls-base.json");
         });
     };
     

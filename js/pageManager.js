@@ -26,13 +26,11 @@ PageManager.onLoad = function () {
     L10n.localizeStatic();
     UI.initSelectorFilters();
     UI.initPanelTogglers();
-	if(MODE === "Standalone"){
-		DBMS = new LocalDBMS();
-		DBMS.setDatabase(BaseExample.data, function(err){
-	        if(err) {Utils.handleError(err); return;}
-	        PageManager.consistencyCheck(PageManager.onDatabaseLoad);
-		});
-	}
+	DBMS = new LocalDBMS();
+	DBMS.setDatabase(BaseExample.data, function(err){
+        if(err) {Utils.handleError(err); return;}
+        PageManager.consistencyCheck(PageManager.onDatabaseLoad);
+	});
 };
 
 PageManager.consistencyCheck = function(callback){
@@ -50,63 +48,45 @@ PageManager.consistencyCheck = function(callback){
 PageManager.onDatabaseLoad = function () {
     "use strict";
     
-	PermissionInformer.refresh(function(err){
-    	if(err) {Utils.handleError(err); return;}
-    	
-    	PermissionInformer.isAdmin(function(err, isAdmin){
-    		if(err) {Utils.handleError(err); return;}
-    		
-    		var root = PageManager;
-    		root.views = {};
-    		var nav = "navigation";
-    		var content = "contentArea";
-    		var button;
-    		var navigation = getEl(nav);
-    		var containers = {
-    				root: root,
-    				navigation: navigation,
-    				content: getEl(content)
-    		};
-//    		Utils.addView(containers, "overview", Overview, {mainPage:true});
-    		Utils.addView(containers, "performance", Performance, {mainPage:true});
-//    		Utils.addView(containers, "characters", Characters);
-//    		Utils.addView(containers, "stories", Stories);
-//    		Utils.addView(containers, "electionComparator", ElectionComparator);
-//    		Utils.addView(containers, "about", About);
-//    		Utils.addView(containers, "character-filter", CharacterFilter, {id:"filterButton", tooltip:true});
-    		
-    		addEl(navigation, addClass(makeEl("div"), "nav-separator"));
-    		
-            var btnOpts = {
-                tooltip : true,
-                className : 'mainNavButton'
-            }
-    		
-    		if(isAdmin){
-    		    var button = PageManager.makeButton("dataLoadButton", "open-database", null, btnOpts);
-    			button.addEventListener('change', FileUtils.readSingleFile, false);
-    			
-    			var input = makeEl("input");
-    			input.type = "file";
-    			button.appendChild(input);
-    			addEl(navigation, button);
-    		}
-    		
-    	    addEl(navigation, PageManager.makeButton("dataSaveButton", "save-database", FileUtils.saveFile, btnOpts));
-    		if(MODE === "Standalone"){
-    		    addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
-    		}
-    		
-//    		Utils.addView(containers, "logViewer", LogViewer, {id:"logViewerButton", tooltip:true});
-    		
-    		FileUtils.init(function(err){
-    			if(err) {Utils.handleError(err); return;}
-    			PageManager.consistencyCheck(PageManager.currentView.refresh);
-    		});
-    		
-    		PageManager.currentView.refresh();
-    	});
+	var root = PageManager;
+	root.views = {};
+	var nav = "navigation";
+	var content = "contentArea";
+	var button;
+	var navigation = getEl(nav);
+	var containers = {
+			root: root,
+			navigation: navigation,
+			content: getEl(content)
+	};
+	Utils.addView(containers, "performance", Performance, {mainPage:true});
+	
+	addEl(navigation, addClass(makeEl("div"), "nav-separator"));
+	
+	Utils.addView(containers, "about", About);
+	
+    var btnOpts = {
+        tooltip : true,
+        className : 'mainNavButton'
+    }
+	
+    var button = PageManager.makeButton("dataLoadButton", "open-database", null, btnOpts);
+	button.addEventListener('change', FileUtils.readSingleFile, false);
+	
+	var input = makeEl("input");
+	input.type = "file";
+	button.appendChild(input);
+	addEl(navigation, button);
+	
+    addEl(navigation, PageManager.makeButton("dataSaveButton", "save-database", FileUtils.saveFile, btnOpts));
+    addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
+	
+	FileUtils.init(function(err){
+		if(err) {Utils.handleError(err); return;}
+		PageManager.consistencyCheck(PageManager.currentView.refresh);
 	});
+	
+	PageManager.currentView.refresh();
     
 };
 

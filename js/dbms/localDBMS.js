@@ -27,10 +27,4 @@ LocalDBMS.prototype.getSettings = function(){
 };
 
 commonAPI(LocalDBMS, Migrator, CommonUtils);
-statisticsAPI(LocalDBMS, R, CommonUtils);
 consistencyCheckAPI(LocalDBMS, R, CommonUtils);
-charactersAPI(LocalDBMS, Errors);
-extrasAPI(LocalDBMS, CommonUtils, dateFormat);
-profileConfigurerAPI(LocalDBMS, Constants, CommonUtils, Errors);
-storiesAPI(LocalDBMS, CommonUtils, Errors);
-//logAPI(LocalDBMS, R, CommonUtils, false, MODE); // log function enabled in standalone mode
