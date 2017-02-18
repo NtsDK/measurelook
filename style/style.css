@@ -1,0 +1,342 @@
+/*Copyright 2016 Timofey Rechkalov <ntsdk@yandex.ru>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+   limitations under the License. */
+
+/** profile configurer */
+.itemNameInput{
+	width:250px;
+}
+
+.profile-configurer-enum, .profile-configurer-string, .profile-configurer-text{
+	width:400px;
+}
+
+/* profile configurer **/
+
+/** story events */
+#createStoryName{
+  width: 240px;
+}
+
+.story-events-div-main{
+	display:flex;
+	width: 100%;
+	margin-bottom: 8px;
+}
+.story-events-div-left{
+	flex-grow:1;
+	margin-right: 10px;
+}
+.story-events-div-left input {
+	width:100%;
+}
+.story-events-div-right{
+	flex-grow:0;
+}
+
+#eventNameInput{
+	width:350px;
+}
+/* story events **/
+
+/** character filter */
+
+.sortAsc span {
+	background: transparent url("../images/sort_ascending.png") no-repeat scroll 0% 0%;
+}
+.sortDesc span {
+	background: transparent url("../images/sort_descending.png") no-repeat scroll 0% 0%;
+}
+.sortAsc span,.sortDesc span {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+  margin-left: 8px;
+  background-size: 16px;
+}
+
+/* character filter **/
+
+/** briefing preview */
+.briefingTextSpan{
+  width: 700px;
+  display: inline-block;
+  max-height: 400px;
+  overflow-y: scroll;
+  border: 1px solid grey;
+}
+/* briefing preview **/
+
+/** file uploader style*/
+.file-upload {
+     position: relative; 
+     overflow: hidden; 
+     height: 36px; 
+/*      background: #6da047; */
+     background: grey;
+     border-radius: 3px;
+     padding: 8px 4px;
+     color: #fff;
+     text-align: center;
+     width: 400px;
+}
+.file-upload:hover {
+/*      background: #7aad55; */
+}
+.file-upload input[type="file"]{
+    display: none; 
+}
+.file-upload label {
+     display: block;
+     position: absolute;
+     top: 0;
+     left: 0;
+     width: 400px;
+     height: 100%;
+     cursor: pointer;
+}
+.file-upload span {
+     line-height: 36px; 
+}
+/* file uploader style**/
+
+/*----------------------------------------------------*/
+
+
+
+#masterStoryArea {
+	width: 100%;
+	height: 500px;
+}
+
+.eventText {
+	width: 100%;
+	height: 150px;
+}
+
+
+/** characterProfile.js */
+.profileTextInput {
+	height: 250px;
+	width: 550px;
+}
+
+.profileStringInput {
+	width: 400px;
+}
+/* characterProfile.js **/
+
+#eventPresenceTable tr:nth-child(odd), #eventPresenceTable tr td:nth-child(odd){
+	background-color: rgba(255, 255, 255, 0.5);
+}
+
+#eventPresenceTable tr:nth-child(even), #eventPresenceTable tr td:nth-child(even){
+	background-color: rgba(222, 226, 228, 0.5);
+}
+
+/** events */
+
+.eventMainPanelRow{
+  display:flex;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+#personalStories .eventMainPanelRow:nth-child(2n+1){
+  background-color: #DEE2E4;
+}
+
+.eventMainPanelRow-left{
+  flex-grow:0;
+  margin-right: 20px;
+  flex-basis: 350px;
+}
+.eventMainPanelRow-right{
+  flex-grow:1;
+}
+
+/* events **/
+
+/** events.js */
+.eventOriginalStory {
+	width: 300px;
+}
+
+.briefingPersonalStory {
+	height: 175px;
+	display: block;
+	width:700px;
+}
+.eventPersonalStory {
+	height: 175px;
+	display: block;
+	width:350px;
+}
+
+#personalStoriesCharacterContainer{
+	width: 210px;
+	overflow: auto;
+}
+
+#events-storySelector, #events-characterSelector {
+	display: block;
+	width:100%;
+}
+
+.events-eventsContainer{
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.events-singleEventAdaptation{
+	flex-grow:0;
+}
+
+/* events.js **/
+
+.bioInput {
+	width: 300px;
+	height: 100px;
+}
+
+.inventoryInput {
+	width: 300px;
+}
+
+.defaultDate {
+	background-color: rgba(255, 0, 0, 0.1);
+}
+
+#timelineContainer {
+	background-color: #fff;
+}
+
+.flexRoot {
+	display: flex;
+}
+
+.storySelectorContainer {
+/* 	flex-basis: 150px; */
+	flex-grow: 0;
+}
+
+
+.storySelectorContainer2 {
+    flex-basis: 20px;
+    flex-grow: 0;
+}
+
+.storySelectorContainer>select {
+	width: 90%;
+}
+
+.visualObjectContainer {
+	flex-grow: 1;
+}
+
+.importantItem .vis-item-content {
+	color: white;
+	background-color: red;
+	border-color: darkred;
+}
+
+#gameNameInput {
+	width: 300px;
+}
+
+#gameDescription {
+  width: 100%;
+  height: 400px;
+}
+
+/* social network */
+#socialNetworkContainer {
+	width: 800px;
+	height: 600px;
+	border: 1px solid lightgray;
+	background-color: #EDEDED;
+}
+
+/* briefing export */
+#advancedTextExportContainer {
+	display: flex;
+}
+
+#advancedTextExportContainer div {
+	flex-basis: 0px;
+	flex-grow: 1;
+}
+
+#advancedTextExportContainer div textarea {
+	width: 100%;
+	height: 400px;
+}
+
+
+/* histogram */
+
+.overviewHist{
+  display: flex;
+  height:130px;
+  width: 100%;
+  background-color: white;
+  align-items: flex-end;
+  padding: 8px;
+}
+
+.overviewHist > .bar{
+  flex-basis: 0;
+  flex-grow: 1;
+}
+
+.overviewHist > .bar{
+  background-color: #7BE141;
+  border: 1px solid #41A906;
+  margin: 0 2px;
+  max-width: 30px;
+  text-align: center;
+}
+
+.overviewHist > .bar:hover{
+  background-color: #A1EC76;
+  border: 1px solid #41A906;
+}
+
+.statisticsLabel{
+  text-align: right;
+}
+
+#profileDiagrams{
+  display: flex;
+  flex-wrap: wrap;
+}
+#profileDiagrams > div{
+  flex-basis: 0;
+  flex-grow: 1;
+  min-width: 250px;
+  text-align: center;
+}
+
+.select2-mono-selector{
+  width: 200px;
+}
+
+/* access manager */
+#permissionTable {
+  width: 300px;
+  word-wrap: break-word;
+}
+
+#permissionTable ol, #permissionTable ul{
+  padding-left: 20px;
+} 

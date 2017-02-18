@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+
+<!-- Copyright 2016 Timofey Rechkalov <ntsdk@yandex.ru>
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+   limitations under the License.  -->
+
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title l10n-id="header-page-title"></title>
+
+<link rel="stylesheet" href="style/bootstrap.min.css" >
+<link rel="stylesheet" type="text/css" href="style/common.css"  media="screen" />
+<link rel="stylesheet" type="text/css" href="style/style.css"  media="screen" />
+
+<script src="mode.js"></script>
+
+<link rel="stylesheet" type="text/css" href="libs/jquery.datetimepicker.css"/>
+<script src="libs/jquery-2.1.4.js"></script>
+<script src="libs/bootstrap.min.js"></script>
+<script src="libs/jquery.datetimepicker.js"></script>
+<script src="libs/select2.min.js"></script>
+<link rel="stylesheet" type="text/css" href="libs/select2.min.css"/>
+
+<script src="libs/FileSaver.js"></script>
+<script src="libs/Chart.min.js"></script>
+<script src="libs/canvasjs.min.js"></script>
+<script src="libs/ramda.min.js"></script>
+
+<script src="l10n/l10n.ru.js"></script>
+<script src="js/l10n.js"></script>
+
+</head>
+<body onload="PageManager.onLoad()">
+  
+  <script src="js/common/baseExample.js"></script>
+  <script src="js/common/emptyBase.js"></script>
+  <script src="js/common/constants.js"></script>
+  <script src="js/common/migrator.js"></script>
+  <script src="js/common/commonUtils.js"></script>
+  <script src="js/common/dateFormat.js"></script>
+  <script src="js/common/errors.js"></script>
+  <script src="js/common/engine/common.js"></script>
+  <script src="js/common/engine/statisticsAPI.js"></script>
+  <script src="js/common/engine/consistencyCheckAPI.js"></script>
+  <script src="js/common/engine/charactersAPI.js"></script>
+  <script src="js/common/engine/extrasAPI.js"></script>
+  <script src="js/common/engine/profileConfigurerAPI.js"></script>
+  <script src="js/common/engine/storiesAPI.js"></script>
+  <script src="js/common/engine/logAPI.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/uiUtils.js"></script>
+  <script src="js/fileUtils.js"></script>
+  
+  <script src="js/dbms/localDBMS.js"></script>
+  <script src="js/permissionInformer.js"></script>
+
+  <script src="js/pageManager.js"></script>
+  
+  <script src="js/pages/performance.js"></script>
+<!--   <script src="js/pages/overview.js"></script> -->
+
+<!--   <script src="js/pages/characters.js"></script> -->
+<!--   <script src="js/pages/characterProfile.js"></script> -->
+<!--   <script src="js/pages/characterFilter.js"></script> -->
+<!--   <script src="js/pages/characterProfileConfigurer.js"></script> -->
+
+<!--   <script src="js/pages/stories.js"></script> -->
+<!--   <script src="js/pages/masterStory.js"></script> -->
+<!--   <script src="js/pages/electors.js"></script> -->
+<!--   <script src="js/pages/electionComparator.js"></script> -->
+<!--   <script src="js/pages/about.js"></script> -->
+
+  <script src="js/pages/logViewer.js"></script>
+  
+
+  <div id="navigation">
+  
+  </div>
+
+  <div class="block" id="contentArea"></div>
+
+  <div class="hidden">
+    <div id="performance">
+      <div style="display:flex;justify-content: stretch;">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href="#" panel-toggler="#performance div#benchmark-description"> <h3 class="panel-title">Информация</h3></a>
+          </div>
+          <div class="panel-body" id="benchmark-description">
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href="#" panel-toggler="#performance div#benchmark-settings"> <h3 class="panel-title">Настройки</h3></a>
+          </div>
+          <div class="panel-body" id="benchmark-settings">
+            <div><input type="checkbox" id="showRawData"/><label for="showRawData">Показать графики по исходным данным</label></div>
+            <div><input type="checkbox" id="showAvgData"/><label for="showAvgData">Показать график по средним значениям</label></div>
+            <div>Данные для отображения</div>
+            <select multiple id="chartDataSelector"></select>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">График</h3>
+        </div>
+        <div class="panel-body">
+          <div id="chartContainer" style="height: 600px; width: 100%;">
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div id="overviewDiv">
+    
+      <div style="display:flex;justify-content: space-around;">
+        <div style="flex-grow:1;margin-right: 10px;">
+          <div id="commonInfoDiv" class="panel panel-default">
+            <div class="panel-body">
+              <table class="table table-bordered" style="width: auto;">
+                <tr>
+                  <td><span l10n-id="overview-name"></span></td>
+                  <td><input id="gameNameInput" class="adminOnly"></input></td>
+                </tr>
+                <tr class="hidden">
+                  <td><span l10n-id="overview-pre-game-start-date"></span></td>
+                  <td><input id="preGameDatePicker" class="adminOnly"></input></td>
+                </tr>
+                <tr class="hidden">
+                  <td><span l10n-id="overview-pre-game-end-date"></span></td>
+                  <td><input id="gameDatePicker" class="adminOnly"></input></td>
+                </tr>
+                <tr>
+                  <td><span l10n-id="overview-last-save-time">Время последнего сохранения базы</span></td>
+                  <td id="lastSaveTime"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <div style="display:flex;margin-right:10px;">
+            <div class="navigation-button overviewInfoButton" id="descriptionPanel" l10n-id="overview-descr"></div>
+            <div class="navigation-button overviewInfoButton" id="diagramsPanel" l10n-id="overview-diagrams"></div>
+          </div>
+        
+          <div class="panel panel-default" >
+            <div class="panel-body">
+              <div id="descriptionPanelContainer" class="overviewContainer">
+                <textarea id="gameDescription" class="adminOnly"></textarea>
+              </div>
+              <div id="diagramsPanelContainer" class="overviewContainer">
+                <table class="table table-bordered" style="width: 100%;">
+                  <tr class="hidden">
+                    <td>
+                      <h4 l10n-id="overview-event-count-diagram"></h4>
+                      <div id="storyEventsHist" class="overviewHist"></div>
+                    </td>
+                    <td>
+                      <h4 l10n-id="overview-character-count-diagram"></h4>
+                      <div id="storyCharactersHist" class="overviewHist"></div>
+                    </td>
+                  </tr>
+                  <tr class="hidden">
+                    <td>
+                      <h4 l10n-id="overview-story-completeness-diagram"></h4>
+                      <div id="eventCompletenessHist" class="overviewHist"></div>
+                    </td>
+                    <td>
+                      <h4 l10n-id="overview-object-belonging-diagrams"></h4>
+                      <div style="display:flex;justify-content:center;">
+                        <div style="flex-grow:1;flex-basis:0;text-align: center;">
+                          <canvas id="characterChart" width="200" height="100"></canvas><br>
+                          <span l10n-id="overview-characters-diagram"></span>
+                        </div>
+                        <div style="flex-grow:1;flex-basis:0;text-align: center;">
+                          <canvas id="storyChart" width="200" height="100"></canvas><br>
+                          <span l10n-id="overview-stories-diagram"></span>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <div id="profileDiagrams"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="panel panel-default" style="flex-grow:0;flex-basis: 400px;">
+          <div class="panel-heading">
+            <h3 class="panel-title" l10n-id="overview-stats"></h3>
+          </div>
+          <div class="panel-body">
+            <table class="table table-bordered" style="width: auto;">
+            <tbody>
+              <tr><td><span class="statisticsLabel" l10n-id="overview-story-count"></span></td><td><span class="statisticsValue" id="storyNumber"></span>        </td></tr>
+              <tr><td><span class="statisticsLabel" l10n-id="overview-character-count"></span></td><td><span class="statisticsValue" id="characterNumber"></span>    </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-event-count"></span></td><td><span class="statisticsValue" id="eventsNumber"></span>       </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-user-count"></span></td><td><span class="statisticsValue" id="userNumber"></span>         </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-first-event"></span></td><td><span class="statisticsValue" id="firstEvent"></span>         </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-last-event"></span></td><td><span class="statisticsValue" id="lastEvent"></span>          </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-symbol-count"></span></td><td><span class="statisticsValue" id="textCharacterNumber"></span></td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-story-completeness"></span></td><td><span class="statisticsValue" id="storyCompleteness"></span>  </td></tr>
+              <tr class="hidden"><td><span class="statisticsLabel" l10n-id="overview-general-completeness"></span></td><td><span class="statisticsValue" id="generalCompleteness"></span></td></tr>
+            </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="charactersDiv">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <a href="#" panel-toggler="#charactersDiv div.panel-body"> <h3 class="panel-title" l10n-id="characters-character-managing"></h3></a>
+        </div>
+        <div class="panel-body">
+          <input id="characterNameInput" l10n-placeholder-id="characters-character-name"></input>
+          <button id="createCharacterButton" l10n-id="common-add"></button>
+          <br> <span l10n-id="common-rename-from"></span> <select id="fromName" class="select2-mono-selector"></select> 
+          <span l10n-id="common-to"></span> <input
+            id="toName" l10n-placeholder-id="characters-new-character-name"></input>
+          <button id="renameCharacter" l10n-id="common-ok"></button>
+          <br> <select id="characterRemoveSelector" class="select2-mono-selector" ></select>
+          <button id="removeCharacterButton" l10n-id="common-remove"></button>
+        </div>
+      </div>
+    
+      <div id="charactersNavigation"></div>
+      <div id="charactersContent"></div>
+    </div>
+
+
+      
+    <div id="characterProfile">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <table>
+            <tr>
+              <th l10n-id="characters-characters"></th>
+            </tr>
+            <tr>
+              <td><input selector-filter="bioEditorSelector"><br>
+              <select size=20 id="bioEditorSelector"></select></td>
+              <td>
+                <div id="profileContentDiv"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="characterProfileConfigurer">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <span l10n-id="characters-profile-item-name"></span>
+          <input id="profileItemNameInput" class="itemNameInput adminOnly"></input> 
+          <span l10n-id="characters-profile-item-type"></span>
+          <select id="profileItemTypeSelector" class="adminOnly"></select> 
+          <span l10n-id="characters-profile-item-position"></span>
+          <select id="profileItemPositionSelector" class="adminOnly"></select>
+          <button id="createProfileItemButton" class="adminOnly" l10n-id="common-add"></button><br> 
+          <select id="moveProfileItemSelector" class="adminOnly"></select> 
+          <span l10n-id="characters-profile-item-position"></span>
+          <select id="moveProfileItemPositionSelector" class="adminOnly"></select>
+          <button id="moveProfileItemButton" class="adminOnly" l10n-id="characters-move-item"></button><br>
+          <select id="removeProfileItemSelector" class="adminOnly"></select>
+          <button id="removeProfileItemButton" class="adminOnly" l10n-id="common-remove"></button>
+          <br>
+    
+          <table class="table table-bordered" style="width: auto;">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th l10n-id="characters-table-profile-item-name"></th>
+              <th l10n-id="characters-profile-item-type"></th>
+              <th l10n-id="characters-profile-item-default-value"></th>
+            </tr>
+          </thead>
+          <tbody id="profileConfigBlock"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    
+
+    <div id="characterFilterDiv">
+      <table>
+        <tr>
+          <td>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a href="#" panel-toggler="#characterFilterDiv div.column-select-area">
+                  <h3 class="panel-title" l10n-id="character-filter-show-profile-item"></h3>
+                </a>
+              </div>
+              <div class="panel-body column-select-area">
+                <select multiple id="profileItemSelector"></select>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <a href="#" panel-toggler="#characterFilterDiv div.filter-settings-area">
+                  <h3 class="panel-title" l10n-id="character-filter-filter"></h3>
+                </a>
+              </div>
+              <div class="panel-body filter-settings-area">
+                <span l10n-id="character-filter-results"></span> <span id="filterResultSize"></span><br><br>
+                <div id="filterSettingsDiv"></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <table  class="table table-striped table-bordered">
+                <thead id="filterHead"></thead>
+                <tbody id="filterContent"></tbody>
+                </table>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+    
+
+
+    <div id="storiesDiv">
+      <div style="display: flex;justify-content:space-around;">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href="#" panel-toggler="#storiesDiv div.first-panel">
+              <h3 class="panel-title" l10n-id="stories-stories"></h3>
+            </a>
+          </div>
+          <div class="panel-body first-panel">
+            <select id="storySelector" style="width:175px;"></select>
+          </div>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a href="#" panel-toggler="#storiesDiv div.second-panel">
+              <h3 class="panel-title" l10n-id="stories-story-management"></h3>
+            </a>
+          </div>
+          <div class="panel-body second-panel">
+            <input id="createStoryName" l10n-placeholder-id="stories-story-name"></input>
+            <button id="createStoryButton"  l10n-id="common-add"></button>
+            <br> <span l10n-id="common-rename-from"></span> <select id="fromStory"></select> <span l10n-id="common-to"></span> <input
+              id="toStory" l10n-placeholder-id="stories-new-story-name"></input>
+            <button id="renameStoryButton" l10n-id="common-ok"></button>
+            <br> <select id="storyRemoveSelector"></select>
+            <button id="removeStoryButton" l10n-id="common-remove"></button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="display:flex;">
+          <div id="storiesNavigationLeft" style="flex-grow:1;width:50%;margin-right:10px;" ></div>
+          <div id="storiesNavigationRight" style="flex-grow:1;width:50%;justify-content: flex-end;" ></div>
+        </div>
+        <div style="display:flex;">
+          <div style="flex-grow:1;width:50%;margin-right:10px;" id="storiesContentLeft"></div>
+          <div id="storiesContentRight" style="flex-grow:1;width:50%;"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="masterStoryDiv2">
+      <div class="panel panel-default">
+        <div class="panel-body">
+           <textarea id="masterStoryArea" class="isStoryEditable"></textarea>
+        </div>
+      </div>
+    </div>
+    
+    <div id="electorsDiv">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <table  cellspacing=0 cellpadding=0 class="table table-bordered">
+            <thead id="electorsTableHead"></thead>
+            <tbody id="electorsTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="electionComparatorDiv">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Сравнение выборов</h3>
+        </div>
+        <div class="panel-body">
+          <div style="display:flex;justify-content:space-between;">
+            <div><label>Текущие выборы</label><select id="election1"></select>    </div>
+            <div><label>Прошедшие выборы</label><select id="election2"></select>  </div>
+            <div><label>Отсечка времени</label><select id="timeSelector"></select></div>
+            <div><input type="checkbox" id="showScatterChartCheckbox"/><label for="showScatterChartCheckbox">Показать график</label></div>
+          </div>
+          <div id="chartContainer" style="height: 600px; width: 100%;">
+          </div>
+          
+          <table class="table table-bordered">
+            <thead id="electionComparatorHead">
+            </thead>
+            <tbody id="electionComparatorData"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    
+    <div id="logViewerDiv">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <label l10n-id="log-viewer-page"></label><select id="logPageSelector"></select>
+          <table class="table table-bordered table-striped character-activity-area">
+            <thead>
+              <th>№</th>
+              <th l10n-id="log-viewer-date"></th>
+              <th l10n-id="log-viewer-user"></th>
+              <th l10n-id="log-viewer-action"></th>
+              <th l10n-id="log-viewer-params"></th>
+            </thead>
+            <tbody id="logData"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="aboutDiv">
+      <div class="panel panel-default">
+        <div class="panel-body">
+        Программа "Ассистент-выборы" разработана Речкаловым Тимофеем по просьбе Анатолия Чиквина. <br><br>
+        Сайт автора: <a href="http://trechkalov.com">trechkalov.com</a><br><br>
+        Программа бесплатна. Исходный код доступен в <a href="https://github.com/NtsDK/polls-assistant">репозитории</a> под лицензией Apache 2.<br><br>
+        Авторы используемых иконок с сайта www.flaticon.com: Anton Saputro, Pavel Kozlov, Budi Tanrim, 
+        Catalin Fertu, Picol и Freepik. Автор иконки сортировки FatCow.<br><br>
+        </div>
+      </div>
+    </div>
+    
+      <div id="warehouse"></div>
+    </div>
+
+
+</body>
+</html>
