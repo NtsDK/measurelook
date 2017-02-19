@@ -14,15 +14,13 @@ See the License for the specific language governing permissions and
 
 (function(callback){
     
-    function consistencyCheckAPI(LocalDBMS, R, CommonUtils) {
+    function consistencyCheckAPI(LocalDBMS, R, CommonUtils, validatorLib, schemaBuilder) {
         
         LocalDBMS.prototype.getConsistencyCheckResult = function(callback) {
             "use strict";
             
             var errors = [];
-//            var pushError = function(str){
-//                errors.push(str);
-//            }
+            var pushError = (str) => errors.push(str);
 //            
 //            checkCharacterProfileConsistency(this.database, pushError);
 //            checkProfileValueConsistency(this.database, pushError);
@@ -32,6 +30,17 @@ See the License for the specific language governing permissions and
 //                checkObjectRightsConsistency(this.database, pushError);
 //            }
             
+            checkMeasures(this.database, pushError);
+            checkParams(this.database, pushError);
+            
+            var schema = schemaBuilder.getSchema(this.database);
+            var validator = validatorLib({allErrors: true}); // options can be passed, e.g. {allErrors: true}
+            var validate = validator.compile(schema);
+            var valid = validate(this.database);
+            if (!valid) {
+                errors = errors.concat(validate.errors);
+            }
+            
             callback(null, errors);
         };
         
@@ -39,109 +48,28 @@ See the License for the specific language governing permissions and
             return R.curry(R.compose(callback, CommonUtils.strFormat));
         }
         
-        var checkObjectRightsConsistency = function(data, callback){
-            "use strict";
-            var storyNames = R.values(data.Stories).map(R.prop('name'));
-            var characterNames = R.values(data.Characters).map(R.prop('name'));
+        var checkMeasures = function(data, callback){
             var processError = getErrorProcessor(callback);
-            
-            R.values(data.ManagementInfo.UsersInfo).forEach(function(user){
-                var difference = R.difference(user.characters, characterNames);
-                if(difference.length != 0){
-                    processError("Object rights inconsistent, user character is not exist: user {0}, character {1}", [user.name, difference]);
+            R.keys(data.measures).forEach((elt) => {
+                if(data.measures[elt].measureKey !== elt){
+                    processError("measureKey is inconsistent with measure id: measureKey {0}, measure id {1}", [data.measures[elt].measureKey, elt]);
                 }
-                difference = R.difference(user.stories, storyNames);
-                if(difference.length != 0){
-                    processError("Object rights inconsistent, user story is not exist: user {0}, story {1}", [user.name, difference]);
-                }
-            })
-        };
-        
-        var checkEventsCharactersConsistency = function(data, callback){
-            "use strict";
-            var processError = getErrorProcessor(callback);
-            R.values(data.Stories).forEach(function(story){
-                var storyCharacters = R.values(story.characters).map(R.prop('name'));
-                story.events.forEach(function(event, i){
-                    var eventCharacters = R.keys(event.characters);
-                    var difference = R.difference(eventCharacters, storyCharacters);
-                    if(difference.length != 0){
-                        processError("Event characters inconsistent, some character is not exist: story {0}, character {1}", [story.name + ":" + i, difference]);
-                    }
-                });
-            });
-        };
-            
-        var checkStoryCharactersConsistency = function(data, callback){
-            "use strict";
-            var charNames = R.values(data.Characters).map(R.prop('name'));
-            var processError = getErrorProcessor(callback);
-            
-            R.values(data.Stories).forEach(function(story){
-               var storyCharactersInner = R.values(story.characters).map(R.prop('name'));
-               var differenceInner = R.difference(storyCharactersInner, charNames);
-               if(differenceInner.length != 0){
-                   processError("Story characters inconsistent, some character is not exist: story {0}, character {1}", [story.name, differenceInner]);
-               }
-               var storyCharactersOuter = R.keys(story.characters);
-               var differenceOuter = R.symmetricDifference(storyCharactersInner, storyCharactersOuter);
-               if(differenceOuter.length != 0){
-                   processError("Story characters inconsistent, inner and outer character name are inconsistent: story {0}, character {1}", [story.name, differenceOuter]);
-               }
             });
         };
         
-        var checkProfileValueConsistency = function(data, callback){
-            "use strict";
-            var profileItems = data.ProfileSettings;
-            var processError = getErrorProcessor(callback)('Profile value inconsistency, item type is inconsistent: char {0}, item {1}, value {2}');
-            
-            var isInconsistent = function(charValue, type, profileItemValue){
-                switch(type){
-                case "text":
-                case "string":
-                    return !R.is(String, charValue);
-                case "enum":
-                    if(!R.is(String, charValue)){
-                        return true;
-                    } else {
-                        var values = profileItemValue.split(',').map(R.trim);
-                        return !R.contains(charValue.trim(), values);
-                    }
-                case "number":
-                    return !R.is(Number, charValue);
-                case "checkbox":
-                    return !R.is(Boolean, charValue);
-                }
-            };
-            
-            R.values(data.Characters).forEach(function(character){
-                profileItems.forEach(function(profileItem){
-                    if(isInconsistent(character[profileItem.name], profileItem.type, profileItem.value)){
-                        processError([character.name, profileItem.name, character[profileItem.name]]);
-                    }
-                })
-            });
-        };
-        
-        var checkCharacterProfileConsistency = function(data, callback){
-            "use strict";
-            var profileItems = data.ProfileSettings.map(R.prop('name'));
+        var checkParams = function(data, callback){
             var processError = getErrorProcessor(callback);
             
-            R.values(data.Characters).forEach(function(character){
-                var charItems = R.keys(character).filter(R.compose(R.not, R.equals('name')));
-                var difference = R.symmetricDifference(charItems,profileItems);
-                if(difference.length != 0){
-                    var processCharacterError = processError(R.__, [character.name,difference]);
-                    if(charItems.length !== profileItems.length){
-                        return processCharacterError("Character profile inconsistent, lengths are different: char {0}, difference [{1}]");
-                    }
-                    if(!R.all(R.contains(R.__, profileItems))(charItems)){
-                        return processCharacterError("Character profile inconsistent, item name inconsistency: char {0}, difference [{1}]");
-                    }
-                }
-            });
+            var names = R.flatten([data.constantParams.map(R.prop('name')), data.changedParams.map(R.prop('name')), data.measuredParams.map(R.prop('name'))]);
+            
+            if(R.uniq(names).length !== names.length){
+                var diff = R.toPairs(R.groupBy((name) => name, names)).filter(pair => pair[1].length > 1).map(pair => pair[0]);
+                processError("some param names are reused: difference {0}", [diff]);
+            }
+            
+            if(R.difference(names,['measureKey','passId','raw']).length !== names.length){
+                processError("measureKey, passId and raw are prohibited param names", []);
+            }
         };
     };
     

@@ -60,7 +60,7 @@ FileUtils.saveFile = function () {
     "use strict";
     DBMS.getDatabase(function(err, database){
     	if(err) {Utils.handleError(err); return;}
-    	FileUtils.json2File(database, "polls-base.json");
+    	FileUtils.json2File(database, "measurelook-base.json");
     });
 };
 

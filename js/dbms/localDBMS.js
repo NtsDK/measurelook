@@ -27,4 +27,4 @@ LocalDBMS.prototype.getSettings = function(){
 };
 
 commonAPI(LocalDBMS, Migrator, CommonUtils);
-consistencyCheckAPI(LocalDBMS, R, CommonUtils);
+consistencyCheckAPI(LocalDBMS, R, CommonUtils, Ajv, Schema);

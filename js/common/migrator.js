@@ -24,8 +24,11 @@ See the License for the specific language governing permissions and
         console.log(prefix + '.' + key + ': ' + (data[key] !== undefined ? "OK" : "undefined"));
     };
     
-	exports.migrate = function(data) {
-		return data;
-	};
-	
+    exports.migrate = function(data) {
+        if (!data.Version) {
+            data.version = "0.1.0";
+        }
+        return data;
+    };
+    
 })(typeof exports === 'undefined' ? this['Migrator'] = {} : exports);
