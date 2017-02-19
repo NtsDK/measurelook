@@ -78,7 +78,7 @@ PageManager, Utils, Overview, Characters, Stories, Events, Briefings, Timeline, 
         addEl(navigation, button);
         
         addEl(navigation, PageManager.makeButton("dataSaveButton", "save-database", FileUtils.saveFile, btnOpts));
-        addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
+//        addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
         
         FileUtils.init(function(err){
             if(err) {Utils.handleError(err); return;}
