@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 var Dictionaries = {};
 Dictionaries['ru'] = {
 	"header": {
-	    "page-title": "Производительность",
+	    "page-title": "Measurelook",
 	    "performance": "Производительность",
 		"overview":"Обзор",
 		"characters":"Участки",

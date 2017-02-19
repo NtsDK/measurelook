@@ -1,5 +1,4 @@
-/*Copyright 2016 Timofey Rechkalov <ntsdk@yandex.ru>
-
+/*Copyright 2015 Timofey Rechkalov <ntsdk@yandex.ru>
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -17,7 +16,7 @@ body {
 }
 
 .block {
-  padding: 10px;
+  padding: 8px;
 }
 
 .block table td {
@@ -29,19 +28,35 @@ body {
 }
 
 
-#navigation{
+#navigation {
   display: flex;
   flex-wrap: wrap;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background-color: rgba(171, 171, 171, 0.25);
+  z-index: 1;
+}
+
+#contentArea {
+    margin: 32px 0 0;
 }
 
 .navigation-button {
   flex-grow: 0;
-  padding: 10px 12px;
+/*   padding: 10px 12px; */
+  padding: 6px 8px;
   background-color: rgb(221, 221, 221);
-  margin: 0px 2px;
+/*   margin: 0px 2px; */
+  border: none;
 }
 
-.navigation-button:hover{
+.action-button:not(:last-of-type),
+.navigation-button:not(:last-of-type) {
+    border-right: 1px solid grey;
+}
+
+.navigation-button:hover, .navigation-button:focus{
   background-color:  #ccc;
 }
 
@@ -52,8 +67,9 @@ body {
 
 .action-button {
   flex-grow: 0;
-  width: 50px;
-  margin: 0px 2px;
+  width: 48px;
+/*   margin: 0px 2px; */
+  border: none;
 }
 
 .nav-separator {
@@ -63,7 +79,9 @@ body {
 .mainNavButton{
   background-color:  rgb(221, 221, 221) !important;
   background: transparent url("../images/folder29.svg") no-repeat scroll 50% 50%;
-  background-size: 40px;
+/*   background-size: 40px; */
+  width: 44px;
+  background-size: 28px;
 }
 
 .mainNavButton:hover{
@@ -86,6 +104,12 @@ body {
 #logoutButton{
   background-image: url("../images/exit22.svg");
 }
+#testButton{
+  background-image: url("../images/long-checklist.svg");
+}
+#aboutButton{
+  background-image: url("../images/copyright.svg");
+}
 
 #chatButton{
   background: transparent url("../images/chat55.svg") no-repeat scroll 50% 0%;
@@ -106,21 +130,50 @@ body {
 #logViewerButton{
   background: transparent url("../images/monuments.svg") no-repeat scroll 50% 50%;
 }
-
-#accessManagerButton, #chatButton, #timelineButton, #socialNetworkButton, #filterButton, #logViewerButton{
-  background-color:  rgb(221, 221, 221);
-  width: 50px;
-  background-size: 35px;
+#groupsButton{
+  background: transparent url("../images/shared-folder.svg") no-repeat scroll 50% 50%;
+}
+#textSearchButton{
+  background: transparent url("../images/textSearch.svg") no-repeat scroll 50% 50%;
 }
 
-#accessManagerButton:hover, #chatButton:hover,
-#timelineButton:hover, #socialNetworkButton:hover, #filterButton:hover, #logViewerButton:hover
+#accessManagerButton, 
+#chatButton, 
+#timelineButton, 
+#socialNetworkButton, 
+#filterButton, 
+#logViewerButton, 
+#groupsButton,
+#textSearchButton
+{
+  background-color:  rgb(221, 221, 221);
+/*   width: 50px; */
+/*   background-size: 35px; */
+  width: 44px;
+  background-size: 28px;
+}
+
+#accessManagerButton:hover, 
+#chatButton:hover,
+#timelineButton:hover, 
+#socialNetworkButton:hover, 
+#filterButton:hover, 
+#logViewerButton:hover,
+#groupsButton:hover,
+#textSearchButton:hover
 {
   background-color:  #ccc;
 }
 
-#accessManagerButton.active, #chatButton.active, 
-#timelineButton.active, #socialNetworkButton.active, #filterButton.active, #logViewerButton.active{
+#accessManagerButton.active, 
+#chatButton.active, 
+#timelineButton.active, 
+#socialNetworkButton.active, 
+#filterButton.active, 
+#logViewerButton.active,
+#groupsButton.active,
+#textSearchButton.active
+{
   color: #FFF;
 /*   background-color: #337AB7; */
   background-color: rgb(204,133,72);
@@ -131,11 +184,14 @@ body {
 #dataLoadButton input {
   filter: alpha(opacity = 0);
   opacity: 0;
-  height: 40px;
+  height: 32px;
   width: 50px;
 }
 
-#charactersNavigation, #storiesNavigationLeft, #storiesNavigationRight, #briefingsNavigation{
+#storiesNavigationLeft, 
+#storiesNavigationRight, #briefingsNavigation,
+.sub-tab-navigation
+{
   display: flex;
 }
 
@@ -143,23 +199,98 @@ body {
   background-color: #ededed;
 }
 
-#commonInfoDiv span{
+.panel-body {
+    padding: 8px;
+}
+
+.panel{
+  margin-bottom: 8px;
+/*   box-shadow: 2px 4px 4px rgba(0,0,0,0.3); */
+}
+
+.common-info-div span{
   width: 100%;
   display: inline-block;
   text-align: right;
 }
 
-#commonInfoDiv table{
+.panel-heading {
+  padding: 8px 12px;
+}
+
+.h1, .h2, .h3, h1, h2, h3 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+}
+
+legend{
+  margin-bottom: 8px;
+}
+
+label{
+  margin-bottom: 4px;
+}
+
+.table {
+    margin-bottom: 8px;
+}
+
+.table > tbody > tr > td, .table > tbody > tr > th, 
+.table > tfoot > tr > td, .table > tfoot > tr > th, 
+.table > thead > tr > td, .table > thead > tr > th{
+  padding: 6px;
+}
+
+.common-info-div table{
   margin: 0;
 }
 
-.timeMarkInput{
-  width: 75px;
+.diagram-container{
+  display: flex; 
+  flex-direction: column;
 }
 
-.negativeVisits{
-  background-color: rgba(255, 0, 0, 0.2) !important;
+.diagram-subcontainer{
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  text-align: center;
 }
-.positiveVisits{
-  background-color: rgba(0, 255, 0, 0.2) !important;
+
+/* :focus { */
+/*   outline: 3px solid red; */
+/* } */
+
+input[selector-filter]{
+  width: 100%;
+}
+
+.checkbox-label{
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: auto;
+  text-align: center;
+  border-radius: 4px;
+  background: transparent url(../images/check-grey.svg) no-repeat scroll 50% 50%;
+  background-size: 27px;
+}
+
+#eventPresenceTable .vertical-aligned-td,
+#story-characterActivityTable .vertical-aligned-td{
+  vertical-align: middle;
+}
+
+input[type="checkbox"]:checked + .checkbox-label{
+  background: transparent url(../images/check.svg) no-repeat scroll 50% 50%;
+  background-size: 27px;
+}
+
+.flexRoot {
+  display: flex;
+}
+
+textarea[readonly],
+select[disabled]{
+  background-color: #eee;
 }

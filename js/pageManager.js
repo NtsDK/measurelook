@@ -18,119 +18,117 @@ PageManager, Utils, Overview, Characters, Stories, Events, Briefings, Timeline, 
 
 "use strict";
 
-var PageManager = {};
+((exports)=>{
 
-var DBMS;
-
-PageManager.onLoad = function () {
-    L10n.localizeStatic();
-    UI.initSelectorFilters();
-    UI.initPanelTogglers();
-	DBMS = new LocalDBMS();
-	DBMS.setDatabase(BaseExample.data, function(err){
-        if(err) {Utils.handleError(err); return;}
-        PageManager.consistencyCheck(PageManager.onDatabaseLoad);
-	});
-};
-
-PageManager.consistencyCheck = function(callback){
-    "use strict";
-    DBMS.getConsistencyCheckResult(function(err, consistencyErrors){
-        if(err) {Utils.handleError(err); return;}
-        consistencyErrors.forEach(CommonUtils.consoleLog);
-        if(consistencyErrors.length > 0){
-            Utils.alert(getL10n('overview-consistency-problem-detected'));
-        }
-        callback();
-    });
-};
-
-PageManager.onDatabaseLoad = function () {
-    "use strict";
+    var PageManager = {};
     
-	var root = PageManager;
-	root.views = {};
-	var nav = "navigation";
-	var content = "contentArea";
-	var button;
-	var navigation = getEl(nav);
-	var containers = {
-			root: root,
-			navigation: navigation,
-			content: getEl(content)
-	};
-	Utils.addView(containers, "performance", Performance, {mainPage:true});
-	
-	addEl(navigation, addClass(makeEl("div"), "nav-separator"));
-	
-	Utils.addView(containers, "about", About);
-	
-    var btnOpts = {
-        tooltip : true,
-        className : 'mainNavButton'
-    }
-	
-    var button = PageManager.makeButton("dataLoadButton", "open-database", null, btnOpts);
-	button.addEventListener('change', FileUtils.readSingleFile, false);
-	
-	var input = makeEl("input");
-	input.type = "file";
-	button.appendChild(input);
-	addEl(navigation, button);
-	
-    addEl(navigation, PageManager.makeButton("dataSaveButton", "save-database", FileUtils.saveFile, btnOpts));
-    addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
-	
-	FileUtils.init(function(err){
-		if(err) {Utils.handleError(err); return;}
-		PageManager.consistencyCheck(PageManager.currentView.refresh);
-	});
-	
-	PageManager.currentView.refresh();
+    var state = {};
     
-};
-
-PageManager.runTests = function(){
-    "use strict";
-    window.RunTests();
-};
-
-PageManager.postLogout = function(){
-    "use strict";
-    document.querySelector('#logoutForm button').click();
-};
-
-PageManager.makeButton = function(id, name, callback, opts){
-	"use strict";
-    var button = makeEl("div");
-    button.id = id;
-    if(opts.tooltip){
-        var delegate = function(){
-            $(button).attr('data-original-title', L10n.getValue("header-" + name));
-        };
-        L10n.onL10nChange(delegate);
-        $(button).tooltip({
-            title : L10n.getValue("header-" + name),
-            placement : "bottom"
+    exports.init = function () {
+        L10n.localizeStatic();
+        UI.initSelectorFilters();
+        UI.initPanelTogglers();
+        window.DBMS = new LocalDBMS();
+        DBMS.setDatabase(BaseExample.data, function(err){
+            if(err) {Utils.handleError(err); return;}
+            PageManager.consistencyCheck(PageManager.onDatabaseLoad);
         });
-    }
-    addClass(button, "action-button");
-    if(opts.className){
-        addClass(button, opts.className);
-    }
-    if(callback){
-        listen(button, 'click', callback);
-    }
-    return button;
-};
+    };
+    
+    PageManager.consistencyCheck = function(callback){
+        DBMS.getConsistencyCheckResult(function(err, consistencyErrors){
+            if(err) {Utils.handleError(err); return;}
+            consistencyErrors.forEach(CommonUtils.consoleLog);
+            if(consistencyErrors.length > 0){
+                Utils.alert(getL10n('overview-consistency-problem-detected'));
+            }
+            callback();
+        });
+    };
+    
+    PageManager.onDatabaseLoad = function () {
+        state.views = {};
+        var nav = "navigation";
+        var content = "contentArea";
+        var button;
+        var navigation = getEl(nav);
+        var containers = {
+                root: state,
+                navigation: navigation,
+                content: getEl(content)
+        };
+        Utils.addView(containers, "performance", Performance, {mainPage:true});
+        
+        addEl(navigation, addClass(makeEl("div"), "nav-separator"));
+        
+        Utils.addView(containers, "about", About);
+        
+        var btnOpts = {
+            tooltip : true,
+            className : 'mainNavButton'
+        }
+        
+        var button = PageManager.makeButton("dataLoadButton", "open-database", null, btnOpts);
+        button.addEventListener('change', FileUtils.readSingleFile, false);
+        
+        var input = makeEl("input");
+        input.type = "file";
+//        addClass(input, 'hidden');
+        button.appendChild(input);
+        addEl(navigation, button);
+        
+        addEl(navigation, PageManager.makeButton("dataSaveButton", "save-database", FileUtils.saveFile, btnOpts));
+        addEl(navigation, PageManager.makeButton("newBaseButton", "create-database", FileUtils.makeNewBase, btnOpts));
+        
+        FileUtils.init(function(err){
+            if(err) {Utils.handleError(err); return;}
+            PageManager.consistencyCheck(state.currentView.refresh);
+        });
+        
+        state.currentView.refresh();
+        
+    };
+    
+    PageManager.runTests = function(){
+        window.RunTests();
+    };
+    
+    PageManager.postLogout = function(){
+        document.querySelector('#logoutForm button').click();
+    };
+    
+    PageManager.makeButton = function(id, name, callback, opts){
+        var button = makeEl("div");
+        button.id = id;
+        if(opts.tooltip){
+            var delegate = function(){
+                $(button).attr('data-original-title', L10n.getValue("header-" + name));
+            };
+            L10n.onL10nChange(delegate);
+            $(button).tooltip({
+                title : L10n.getValue("header-" + name),
+                placement : "bottom"
+            });
+        }
+        addClass(button, "action-button");
+        if(opts.className){
+            addClass(button, opts.className);
+        }
+        if(callback){
+            listen(button, 'click', callback);
+        }
+        return button;
+    };
+    
+    window.onbeforeunload = function (evt) {
+        var message = getL10n("utils-close-page-warning");
+        if (typeof evt == "undefined") {
+            evt = window.event;
+        }
+        if (evt) {
+            evt.returnValue = message;
+        }
+        return message;
+    };
 
-window.onbeforeunload = function (evt) {
-    var message = getL10n("utils-close-page-warning");
-    if (typeof evt == "undefined") {
-        evt = window.event;
-    }
-    if (evt) {
-        evt.returnValue = message;
-    }
-    return message;
-};
+})(this['app']={});

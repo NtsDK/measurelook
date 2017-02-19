@@ -1,4 +1,4 @@
-/*Copyright 2016 Timofey Rechkalov <ntsdk@yandex.ru>
+/*Copyright 2017 Timofey Rechkalov <ntsdk@yandex.ru>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ Utils.addView = function (containers, name, view, opts) {
     view.init();
     var buttonClass = "navigation-button";
     containers.root.views[name] = view;
-    var button = makeEl("div");
+    var button = makeEl("button");
     if(opts.tooltip){
         var delegate = function(){
             $(button).attr('data-original-title', L10n.getValue("header-" + name));
@@ -46,7 +46,7 @@ Utils.addView = function (containers, name, view, opts) {
     addClass(button, "-test-" + name);
     addClass(button, "-toggle-class-" + name);
     if(opts.id){
-    	button.id = opts.id;
+        button.id = opts.id;
     }
     containers.navigation.appendChild(button);
     
@@ -97,37 +97,21 @@ Utils.addView = function (containers, name, view, opts) {
     }
 };
 
-Utils.globStringToRegex = function (str) {
-    "use strict";
-    return new RegExp(Utils.preg_quote(str).replace(/\\\*/g, '.*').replace(
-            /\\\?/g, '.'), 'g');
-};
-Utils.preg_quote = function (str, delimiter) {
-    "use strict";
-    // http://kevin.vanzonneveld.net
-    // + original by: booeyOH
-    // + improved by: Ates Goral (http://magnetiq.com)
-    // + improved by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // + bugfixed by: Onno Marsman
-    // + improved by: Brett Zamir (http://brett-zamir.me)
-    // * example 1: preg_quote("$40");
-    // * returns 1: '\$40'
-    // * example 2: preg_quote("*RRRING* Hello?");
-    // * returns 2: '\*RRRING\* Hello\?'
-    // * example 3: preg_quote("\\.+*?[^]$(){}=!<>|:");
-    // * returns 3: '\\\.\+\*\?\[\^\]\$\(\)\{\}\=\!\<\>\|\:'
-    return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\'
-            + (delimiter || '') + '-]', 'g'), '\\$&');
-};
-
 Utils.alert = function (message) {
-    "use strict";
-    window.alert(message);
+    vex.dialog.alert(message);
 };
 
-Utils.confirm = function (message) {
-    "use strict";
-    return window.confirm(message);
+Utils.confirm = function (message, onOk, onCancel) {
+    vex.dialog.confirm({
+        message: message,
+        callback: (val) => {
+            if(val){
+                if(onOk) onOk();
+            } else {
+                if(onCancel) onCancel();
+            }
+        }
+    });
 };
 
 Utils.removeChildren = function (myNode) {
@@ -141,49 +125,74 @@ Utils.removeChildren = function (myNode) {
 };
 
 Utils.processError = function(callback){
-	return function(err){
-		if(err) {
-			Utils.handleError(err);
-			return;
-		}
-		
-		if(callback){
-			var arr = [];
-			for (var i = 1; i < arguments.length; i++) {
-				arr.push(arguments[i]);
-			}
-			callback.apply(null, arr);
-		}
-	}
+    return function(err){
+        if(err) {
+            Utils.handleError(err);
+            return;
+        }
+        
+        if(callback){
+            var arr = [];
+            for (var i = 1; i < arguments.length; i++) {
+                arr.push(arguments[i]);
+            }
+            callback.apply(null, arr);
+        }
+    }
 };
 
-Utils.handleError = function(err){
-	"use strict";
-	if (err instanceof Errors.ValidationError || typeof err === 'object') {
-//		Utils.alert(err.messageId);
-	    Utils.alert(strFormat(getL10n(err.messageId), err.parameters));
-	} else {
-		Utils.alert(err);
-	}
+Utils.handleErrorMsg = function(err){
+    var checkErrorType = R.curry(function(err, name){
+        return err instanceof Errors[name] || (err.name && err.name === name)
+    });
+    if (R.keys(Errors).some(checkErrorType(err))) {
+        return strFormat(getL10n(err.messageId), err.parameters);
+    } else if( typeof err === 'object'){
+        return err.message;
+    } else {
+        return err;
+    }
 };
+
+Utils.handleError = (err) => Utils.alert(Utils.handleErrorMsg(err));
+
+Utils.enableEl = R.curry(function(el, condition){
+    var key = el.tagName.toLowerCase() === "textarea" ? "readonly" : "disabled";
+    if(condition){
+        el.removeAttribute(key);
+    } else {
+        el.setAttribute(key,key);
+    }
+});
 
 Utils.enable = function(root, className, condition){
-	"use strict";
-    var arr = root.getElementsByClassName(className);
-    var i, elem;
-    for (i = 0; i < arr.length; i++) {
-		elem = arr[i];
-		if(condition){
-			elem.removeAttribute("disabled");
-		} else {
-			elem.setAttribute("disabled","disabled");
-		}
-	}
+    nl2array(root.getElementsByClassName(className)).map(Utils.enableEl(R.__, condition));
 };
 
 Utils.charOrdAObject = CommonUtils.charOrdAFactory(function(a){
     return a.displayName.toLowerCase();
 });
+
+Utils.rebuildSelector = function(selector, names){
+    "use strict";
+    clearEl(selector);
+    names.forEach(function (nameInfo) {
+        var option = makeEl("option");
+        option.appendChild(makeText(nameInfo.displayName));
+        option.value = nameInfo.value;
+        selector.appendChild(option);
+    });
+};
+
+Utils.rebuildSelectorArr = function(selector, names){
+    "use strict";
+    clearEl(selector);
+    names.forEach(function (name) {
+        var option = makeEl("option");
+        option.appendChild(makeText(name));
+        selector.appendChild(option);
+    });
+};
 
 String.prototype.endsWith = function (suffix) {
     "use strict";
@@ -193,12 +202,10 @@ String.prototype.endsWith = function (suffix) {
 var strFormat = R.curry(CommonUtils.strFormat);
 
 function getL10n(key){
-    "use strict";
     return L10n.getValue(key);
 };
 
 function constL10n(key){
-    "use strict";
     return L10n.getValue('constant-' + key);
 }
 
@@ -207,12 +214,17 @@ function isEmpty (obj) {
     return (Object.getOwnPropertyNames(obj).length === 0);
 };
 
-function addClass(o, c){
+var addClass = R.curry(function(o, c){
     var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
     if (re.test(o.className)) return;
     o.className = (o.className + " " + c).replace(/\s+/g, " ").replace(/(^ | $)/g, "");
     return o;
-};
+});
+
+var addClasses = R.curry(function(o, c){
+    R.ap([addClass(o)], c);
+    return o;
+});
 
 var rAddClass = R.curry(function(c, o){
   var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
@@ -234,21 +246,34 @@ function hasClass(o, c){
     return (re.test(o.className));
 };
  
-function removeClass(o, c){
+var removeClass = R.curry(function(o, c){
     var re = new RegExp("(^|\\s)" + c + "(\\s|$)", "g")
     o.className = o.className.replace(re, "$1").replace(/\s+/g, " ").replace(/(^ | $)/g, "")
-};
+});
 
 function setClassByCondition(o,c,condition){
-	if(condition){
-		addClass(o,c);
-	} else {
-		removeClass(o,c);
-	}
+    if(condition){
+        addClass(o,c);
+    } else {
+        removeClass(o,c);
+    }
+    return o;
 };
 
 function getEl(id){
   return document.getElementById(id);
+};
+
+function queryEl(sel){
+    return document.querySelector(sel);
+};
+
+function queryEls(sel){
+    return nl2array(document.querySelectorAll(sel));
+};
+
+function queryElEls(el, sel){
+    return nl2array(el.querySelectorAll(sel));
 };
 
 function getEls(clazz){
@@ -263,15 +288,10 @@ function makeText(text){
   return document.createTextNode(text);
 };
 
-//function addEl(parent, child){
-//  parent.appendChild(child);
-//  return parent;
-//};
 var addEl = R.curry(function(parent, child){
     parent.appendChild(child);
     return parent;
 });
-
 var addEls = R.curry(function(parent, children){
     R.ap([addEl(parent)], children);
     return parent;
@@ -288,26 +308,36 @@ var rAddEl = R.curry(function(child, parent){
   return parent;
 });
 
-function setAttr(el, name, value){
+var setAttr = R.curry(function(el, name, value){
   el.setAttribute(name, value);
   return el;
+});
+
+var setStyle = R.curry(function(el, name, value){
+    el.style[name] = value;
+    return el;
+});
+
+function delAttr(el, name){
+    el.removeAttribute(name);
+    return el;
 };
 
 function getAttr(el, name){
     return el.getAttribute(name);
 };
 
-function setProp(el, key, value){
+var setProp = R.curry(function(el, key, value){
   el[key] = value;
   return el;
-};
+});
 
-function setProps(el, map){
+var setProps = R.curry(function(el, map){
   for(var key in map){
     setProp(el, key, map[key]);
   }
   return el;
-}
+});
 
 function clearEl(el){
   Utils.removeChildren(el);
@@ -320,34 +350,29 @@ function passEls(src, dst){
     }
 };
 
-function listen(el, event, listener){
+var listen = R.curry(function(el, event, listener){
   el.addEventListener(event, listener);
-};
+  return el;
+});
 
-function arr2map(array, key){
-    return R.reduce(function(a, b) {
-        a[b[key]] = b;
-        return a;
-    }, {}, array);
-}
+var listenOnEnter = R.curry(function(el, callback){
+    listen(el, 'keydown', function(e) {
+        if (e.keyCode === 13) {
+            callback();
+        }
+    });
+});
 
-function arr2Chunks(array, chunkSize) {
-  var i, j, chunks = [];
-  for (i = 0, j = array.length; i < j; i += chunkSize) {
-    chunks.push(array.slice(i, i + chunkSize));
-  }
-  return chunks;
-};
-
-function fillSelector(sel, data){
-    data.forEach(function (item) {
+var fillSelector = R.curry(function(sel, data){
+    return addEls(sel, data.map(function (item) {
         var opt = makeEl("option");
         addEl(opt, makeText(item.name));
         if(item.value){opt.value = item.value;}
         if(item.selected){opt.selected = true;}
-        addEl(sel, opt);
-    });
-}
+        if(item.className){addClass(opt, item.className);}
+        return opt;
+    }));
+});
 
 function nl2array(nodeList){
     return Array.prototype.slice.call(nodeList);
@@ -366,8 +391,12 @@ var getSelect2DataCommon = R.curry(function(preparator, obj){
 
 var getSelect2Data = getSelect2DataCommon(remapProps4Select2);
 
+var makeSelect2Opt = R.compose(R.zipObj(['id', 'text']), R.repeat(R.__, 2));
+var arr2Select2 = R.compose(R.assoc('data', R.__, {}), R.map(makeSelect2Opt));
+var arr2Select = R.map(R.compose(R.zipObj(['value','name']), R.repeat(R.__, 2)));
+var constArr2Select = R.map(R.compose(R.zipObj(['value','name']), (name) => [name, constL10n(name)]));
+
 var getSelectedRadio = function(query){
-    "use strict";
     var els = document.querySelectorAll(query);
     for (var i = 0; i < els.length; i++) {
         if(els[i].checked === true){
@@ -377,8 +406,16 @@ var getSelectedRadio = function(query){
     return null;
 };
 
+var debugInterceptor = function(callback){
+    return function(){
+        console.log(JSON.stringify(arguments[0]));
+        callback.apply(null, arguments);
+    }
+};
+
 // from date format utils
 //For convenience...
 Date.prototype.format = function (mask, utc) {
-	return dateFormat(this, mask, utc);
+    return dateFormat(this, mask, utc);
 };
+
