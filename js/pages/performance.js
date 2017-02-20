@@ -30,43 +30,29 @@ See the License for the specific language governing permissions and
         exports.content = getEl('performance');
     };
     
-//    meta: {},
-//    constantParams: [],
-//    changedParams: [],
-//    measuredParams: [],
-//    measures: {}
-    
     function paramTitle(param){
         return param.name + ", " + param.units;
     }
     
+    var makeRow = R.curry(function(title, getName, getValue, key, i, arr){
+        var els = [addEl(makeEl('td'), makeText(getName(key))), addEl(makeEl('td'), makeText(getValue(key)))];
+        if(i==0){
+            var el = addEl(makeEl('th'), makeText(title));
+            setAttr(el, 'rowspan', arr.length);
+            els = [el].concat(els);
+        }
+        return addEls(makeEl('tr'), els);
+    });
+    
     exports.refresh = function() {
-        var panel = clearEl(getEl('benchmark-description'));
+        var table = clearEl(queryEl('#benchmark-description tbody'));
         
         DBMS.getDatabase(function(err, database){
             if(err) {Utils.handleError(err); return;}
-            addEl(panel, addEl(makeEl('div'), makeText('Meta')));
-            addEls(panel, Object.keys(database.meta).sort().map(function(key){
-                return addEl(makeEl('div'), makeText(key + ": " + database.meta[key]));
-            }));
-            addEl(panel, makeEl('br'));
-
-            addEl(panel, addEl(makeEl('div'), makeText('Constants')));
-            addEls(panel, database.constantParams.map(function(item){
-                return addEl(makeEl('div'), makeText(paramTitle(item) + ": " + item.value));
-            }));
-            addEl(panel, makeEl('br'));
-
-            addEl(panel, addEl(makeEl('div'), makeText('Changed params')));
-            addEls(panel, database.changedParams.map(function(item){
-                return addEl(makeEl('div'), makeText(paramTitle(item)));
-            }));
-            addEl(panel, makeEl('br'));
-            
-            addEl(panel, addEl(makeEl('div'), makeText('Measured params')));
-            addEls(panel, database.measuredParams.map(function(item){
-                return addEl(makeEl('div'), makeText(paramTitle(item)));
-            }));
+            addEls(table, Object.keys(database.meta).sort().map(makeRow('Метаинформация', key => key, key => database.meta[key])));
+            addEls(table, database.constantParams.map(makeRow('Константы', item => paramTitle(item), item => item.value)));
+            addEls(table, database.changedParams.map(makeRow('Изменяемые параметры', item => paramTitle(item), item => '')));
+            addEls(table, database.measuredParams.map(makeRow('Измеряемые параметры', item => paramTitle(item), item => '')));
             
             fillSelector(clearEl(getEl('chartDataSelector')), database.measuredParams.map(function(val){
                 return {
