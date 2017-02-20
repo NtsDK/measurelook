@@ -1,4 +1,7 @@
-version 0.1.0 (1 Sep 2016)
+version 0.1.0 (20 Fev 2017)
 
-  Initial release. 
-  Polls editing, comparator and scatter plot.
+  Initial release.
+  Described first version of measurelook format. Implemented validation with JSON schema.
+  Implemented measurelook viewer. It supports one changed parameter, showing all graphics and average graphics.
+  
+  

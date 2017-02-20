@@ -47,7 +47,12 @@ FileUtils.readSingleFile = function (evt) {
         var r = new FileReader();
         r.onload = function (e) {
             var contents = e.target.result;
-            var database = JSON.parse(contents);
+            try {
+                var database = JSON.parse(contents);
+            } catch(e){
+                Utils.alert('Ошибка при разборе файла в JSON: ' + e);
+                return
+            }
             DBMS.setDatabase(database, FileUtils.callback);
         };
         r.readAsText(f);
