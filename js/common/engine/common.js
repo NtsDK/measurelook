@@ -23,7 +23,18 @@ See the License for the specific language governing permissions and
 	
 		LocalDBMS.prototype.setDatabase = function(database, callback){
 		    this.database = Migrator.migrate(database);
+		    populateIndirectParams(this.database);
 		    if(callback) callback();
+		};
+		
+		var populateIndirectParams = (base) => {
+		    var indirectParams = base.measuredParams.filter(param => param.type === 'indirect');
+		    R.values(base.measures).forEach(measure => {
+		        indirectParams.forEach( indirectParam => {
+		            measure[indirectParam.name] = R.sum(R.values(R.pick(indirectParam.sumOf, measure)));
+		        });
+		    });
+		    
 		};
 	
 	};

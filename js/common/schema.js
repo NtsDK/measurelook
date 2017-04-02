@@ -31,12 +31,14 @@ See the License for the specific language governing permissions and
                 'definitions': {}
             };
     
-            var paramList = R.concat(base.changedParams.map(param => param.name), base.measuredParams.map(param => param.name)); 
+            var directMeasuredParamsList = base.measuredParams.filter(param => param.type === 'direct').map(param => param.name);
+            var measuredParamsList = base.measuredParams.map(param => param.name);
+            var paramList = R.concat(base.changedParams.map(param => param.name), measuredParamsList); 
             schema.properties = {
                 meta: {},
                 constantParams: constSchema(),
-                changedParams : paramsSchema(),
-                measuredParams : paramsSchema(),
+                changedParams : changedParamsSchema(),
+                measuredParams : measuredParamsSchema(directMeasuredParamsList),
                 measures : measuresSchema(paramList),
                 version : { "type" : "string" },
             };
@@ -69,7 +71,7 @@ See the License for the specific language governing permissions and
             };
         };
         
-        var paramsSchema = () => {
+        var changedParamsSchema = () => {
             return {
                 "type": "array",
                 'items' : {
@@ -84,6 +86,54 @@ See the License for the specific language governing permissions and
                     },
                     "required" : [ "name", "units"],
                     "additionalProperties" : false
+                }
+            };
+        };
+        var measuredParamsSchema = (directParamsList) => {
+            return {
+                "type" : "array",
+                'items' : {
+                    'oneOf' : [ {
+                        "type" : "object",
+                        "properties" : {
+                            "name" : {
+                                "type" : "string"
+                            },
+                            "units" : {
+                                "type" : "string",
+                            },
+                            "type" : {
+                                "type" : "string",
+                                "enum" : ["direct"]
+                            },
+                        },
+                        "required" : [ "name", "units", "type"],
+                        "additionalProperties" : false
+                    }, {
+                        "type" : "object",
+                        "properties" : {
+                            "name" : {
+                                "type" : "string"
+                            },
+                            "units" : {
+                                "type" : "string",
+                            },
+                            "type" : {
+                                "type" : "string",
+                                "enum" : ["indirect"]
+                            },
+                            "sumOf" : {
+                                "type" : "array",
+                                "items" : {
+                                    "type" : "string",
+                                    "enum" : directParamsList
+                                },
+                                "minItems" : 0
+                            },
+                        },
+                        "required" : [ "name", "units", "type", "sumOf"],
+                        "additionalProperties" : false
+                    } ]
                 }
             };
         };

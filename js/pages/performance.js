@@ -24,8 +24,10 @@ See the License for the specific language governing permissions and
         listen(getEl('chartDataSelector'), 'change', onSettingsChange);
         listen(getEl('showRawData'), 'change', onSettingsChange);
         listen(getEl('showAvgData'), 'change', onSettingsChange);
+        listen(getEl('showMedianData'), 'change', onSettingsChange);
         getEl('showRawData').checked = true;
-        getEl('showAvgData').checked = true;
+        getEl('showAvgData').checked = false;
+        getEl('showMedianData').checked = false;
         
         exports.content = getEl('performance');
     };
@@ -69,35 +71,35 @@ See the License for the specific language governing permissions and
     
     var onSettingsChange = function(){
         
-        var measuredParamsList = nl2array(getEl('chartDataSelector').selectedOptions).map(function(item){
-            return item.value;
-        });
+        var measuredParamsList = nl2array(getEl('chartDataSelector').selectedOptions).map(R.prop('value'));
         
         DBMS.getDatabase(function(err, database){
             drawChart(database, measuredParamsList, {
                 drawRaw: getEl('showRawData').checked,
                 drawAvg: getEl('showAvgData').checked,
+                drawMedian: getEl('showMedianData').checked,
             });
         });
     };
     
     var drawChart = function (database, measuredParamsList, opts) {
         var changedParam = database.changedParams[0];
-//        var measuredParam = database.measuredParams[0];
         var data = [];
         
+        var measuredParams = R.filter(R.compose(R.contains(R.__, measuredParamsList), R.prop('name')), database.measuredParams);
+        
         if(opts.drawRaw){
-            var rawData = R.flatten(database.measuredParams
-                    .filter(R.compose(R.contains(R.__, measuredParamsList), R.prop('name')))
-                    .map(makeRawDataLines(database, changedParam)));
+            var rawData = R.flatten(measuredParams.map(makeRawDataLines(database, changedParam))); 
             data = data.concat(rawData);
         }
         
         if(opts.drawAvg){
-            var avgData = R.flatten(database.measuredParams
-                    .filter(R.compose(R.contains(R.__, measuredParamsList), R.prop('name')))
-                    .map(makeAvgDataLines(database, changedParam)));
+            var avgData = R.flatten(measuredParams.map(makeAvgDataLines(database, changedParam))); 
             data = data.concat(avgData);
+        }
+        
+        if(opts.drawMedian){
+            data = data.concat(R.flatten(measuredParams.map(makeMedianDataLines(database, changedParam))));
         }
         
         var chart = new CanvasJS.Chart("chartContainer", {
@@ -150,14 +152,13 @@ See the License for the specific language governing permissions and
         }, dataPoints));
     });
     
-    var makeAvgDataLines = R.curry(function(database, changedParam, measuredParam){
-        var pointed = R.groupBy(function(item){
-            return item[changedParam.name];
-        }, R.values(database.measures));
+    var makeAggregatedDataLines = R.curry(function(label, aggregationFunction, database, changedParam, measuredParam){
+        var pointed = R.groupBy((item) => item[changedParam.name], R.values(database.measures));
         
         var avg = R.map(function(value){
             var clone = R.clone(value[0]);
-            clone[measuredParam.name] = R.sum(R.ap([R.prop(measuredParam.name)], value))/value.length;
+            var rawValues = R.ap([R.prop(measuredParam.name)], value).sort();
+            clone[measuredParam.name] = aggregationFunction(rawValues);
             return clone;
         }, pointed)
         
@@ -171,7 +172,7 @@ See the License for the specific language governing permissions and
         
         return {
             showInLegend: true,
-            legendText: measuredParam.name + " avg",
+            legendText: measuredParam.name + ' ' + label,
             type: "line",
             markerType: "circle",
             markerBorderColor : "black",
@@ -180,5 +181,8 @@ See the License for the specific language governing permissions and
             dataPoints:avg 
         };
     });
-
+    
+    var makeMedianDataLines = makeAggregatedDataLines('median', R.median);
+    var makeAvgDataLines = makeAggregatedDataLines('avg', R.mean);
+    
 })(this['Performance']={});

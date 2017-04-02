@@ -25,8 +25,12 @@ See the License for the specific language governing permissions and
     };
     
     exports.migrate = function(data) {
-        if (!data.Version) {
+        if (!data.version) {
             data.version = "0.1.0";
+        }
+        if(data.version === "0.1.0"){
+            data.measuredParams.forEach(el => el.type = 'direct');
+            data.version = "0.2.0";
         }
         return data;
     };
