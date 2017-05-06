@@ -133,7 +133,7 @@ See the License for the specific language governing permissions and
                 return {
                     x: item[changedParam.name],
                     y: item[measuredParam.name],
-                    toolTipContent: strFormat('Проход: {0}<br/> {1}: {2}<br/>{3}: {4}',[item.passId, paramTitle(changedParam), item[changedParam.name], paramTitle(measuredParam), item[measuredParam.name]])
+                    toolTipContent: strFormat('{0}<br/>Проход: {1}<br/> {2}: {3}<br/>{4}: {5}',[measuredParam.name, item.passId, paramTitle(changedParam), item[changedParam.name], paramTitle(measuredParam), item[measuredParam.name]])
                 }
             })
         }, passes);
