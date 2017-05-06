@@ -46,14 +46,7 @@ FileUtils.readSingleFile = function (evt) {
     if (f) {
         var r = new FileReader();
         r.onload = function (e) {
-            var contents = e.target.result;
-            try {
-                var database = JSON.parse(contents);
-            } catch(e){
-                Utils.alert('Ошибка при разборе файла в JSON: ' + e);
-                return
-            }
-            DBMS.setDatabase(database, FileUtils.callback);
+            FileUtils.setDatabase (e.target.result) 
         };
         r.readAsText(f);
     } else {
@@ -61,11 +54,21 @@ FileUtils.readSingleFile = function (evt) {
     }
 };
 
+FileUtils.setDatabase = (contents) => {
+  try {
+      var database = JSON.parse(contents);
+  } catch(e){
+      Utils.alert('Ошибка при разборе файла в JSON: ' + e);
+      return
+  }
+  DBMS.setDatabase(database, FileUtils.callback);
+};
+
 FileUtils.saveFile = function () {
     "use strict";
     DBMS.getDatabase(function(err, database){
-    	if(err) {Utils.handleError(err); return;}
-    	FileUtils.json2File(database, "measurelook-base.json");
+      if(err) {Utils.handleError(err); return;}
+      FileUtils.json2File(database, "measurelook-base.json");
     });
 };
 

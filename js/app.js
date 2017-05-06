@@ -130,5 +130,9 @@ PageManager, Utils, Overview, Characters, Stories, Events, Briefings, Timeline, 
         }
         return message;
     };
+    
+    listen(window, 'paste', function (evt) {
+        FileUtils.setDatabase(evt.clipboardData.getData("text")) 
+    });
 
 })(this['app']={});
