@@ -68,6 +68,8 @@ PageManager, Utils, Overview, Characters, Stories, Events, Briefings, Timeline, 
             className : 'mainNavButton'
         }
         
+        addEl(navigation, PageManager.makeButton("testButton", "test", PageManager.runTests, btnOpts));
+        
         var button = PageManager.makeButton("dataLoadButton", "open-database", null, btnOpts);
         button.addEventListener('change', FileUtils.readSingleFile, false);
         
@@ -90,7 +92,15 @@ PageManager, Utils, Overview, Characters, Stories, Events, Briefings, Timeline, 
     };
     
     PageManager.runTests = function(){
-        window.RunTests();
+//        window.RunTests();
+        PageManager.consistencyCheck(function(err, checkRes){
+            if(err) {Utils.handleError(err); return;}
+            if(checkRes === undefined || checkRes.length === 0){
+                Utils.alert(getL10n('overview-consistency-is-ok'));
+            } else {
+                Utils.alert(getL10n('overview-consistency-problem-detected'));
+            }
+        });
     };
     
     PageManager.postLogout = function(){

@@ -18,12 +18,13 @@ See the License for the specific language governing permissions and
 	function commonAPI(LocalDBMS, Migrator, CommonUtils) {
 	
 		LocalDBMS.prototype.getDatabase = function(callback){
-		    callback(null, this.database);
+		    callback(null, this.bases[0]);
 		};
 	
 		LocalDBMS.prototype.setDatabase = function(database, callback){
-		    this.database = Migrator.migrate(database);
-		    populateIndirectParams(this.database);
+		    database = Migrator.migrate(database);
+		    populateIndirectParams(database);
+		    this.bases = [database]
 		    if(callback) callback();
 		};
 		

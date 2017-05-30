@@ -18,11 +18,10 @@ See the License for the specific language governing permissions and
 "use strict";
 
 function LocalDBMS(){
-    
+    this.bases = [];
 };
 
 LocalDBMS.prototype.getSettings = function(){
-    "use strict";
     return this.database.Settings;
 };
 

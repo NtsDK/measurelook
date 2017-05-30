@@ -32,6 +32,10 @@ See the License for the specific language governing permissions and
             data.measuredParams.forEach(el => el.type = 'direct');
             data.version = "0.2.0";
         }
+        if(data.version === "0.2.0"){
+            data.name = "";
+            data.version = "0.3.0";
+        }
         return data;
     };
     

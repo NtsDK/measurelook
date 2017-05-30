@@ -21,25 +21,20 @@ See the License for the specific language governing permissions and
             
             var errors = [];
             var pushError = (str) => errors.push(str);
-//            
-//            checkCharacterProfileConsistency(this.database, pushError);
-//            checkProfileValueConsistency(this.database, pushError);
-//            checkStoryCharactersConsistency(this.database, pushError);
-//            checkEventsCharactersConsistency(this.database, pushError);
-//            if(this.database.ManagementInfo){
-//                checkObjectRightsConsistency(this.database, pushError);
-//            }
             
-            checkMeasures(this.database, pushError);
-            checkParams(this.database, pushError);
+            this.bases.forEach(base => {
+                checkMeasures(base, pushError);
+                checkParams(base, pushError);
+                
+                var schema = schemaBuilder.getSchema(base);
+                var validator = validatorLib({allErrors: true}); // options can be passed, e.g. {allErrors: true}
+                var validate = validator.compile(schema);
+                var valid = validate(base);
+                if (!valid) {
+                    errors = errors.concat(validate.errors);
+                }
+            })
             
-            var schema = schemaBuilder.getSchema(this.database);
-            var validator = validatorLib({allErrors: true}); // options can be passed, e.g. {allErrors: true}
-            var validate = validator.compile(schema);
-            var valid = validate(this.database);
-            if (!valid) {
-                errors = errors.concat(validate.errors);
-            }
             
             callback(null, errors);
         };
