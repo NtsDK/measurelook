@@ -36,6 +36,7 @@ See the License for the specific language governing permissions and
             var paramList = R.concat(base.changedParams.map(param => param.name), measuredParamsList); 
             schema.properties = {
                 name: { "type" : "string" },
+                timestamp: { "type" : "string" },
                 meta: {},
                 constantParams: constSchema(),
                 changedParams : changedParamsSchema(),

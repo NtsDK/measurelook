@@ -19,6 +19,8 @@ See the License for the specific language governing permissions and
 "use strict";
 
 (function(exports){
+    
+    var l10n = L10n.get('performance');
 
     exports.init = function() {
         listen(getEl('chartDataSelector'), 'change', onSettingsChange);
@@ -51,10 +53,11 @@ See the License for the specific language governing permissions and
         
         DBMS.getDatabase(function(err, database){
             if(err) {Utils.handleError(err); return;}
-            addEls(table, Object.keys(database.meta).sort().map(makeRow('Метаинформация', key => key, key => database.meta[key])));
-            addEls(table, database.constantParams.map(makeRow('Константы', item => paramTitle(item), item => item.value)));
-            addEls(table, database.changedParams.map(makeRow('Изменяемые параметры', item => paramTitle(item), item => '')));
-            addEls(table, database.measuredParams.map(makeRow('Измеряемые параметры', item => paramTitle(item), item => '')));
+            
+            addEls(table, Object.keys(database.meta).sort().map(makeRow(l10n('metainformation'), key => key, key => database.meta[key])));
+            addEls(table, database.constantParams.map(makeRow(l10n('constants'), item => paramTitle(item), item => item.value)));
+            addEls(table, database.changedParams.map(makeRow(l10n('changed-params'), item => paramTitle(item), item => '')));
+            addEls(table, database.measuredParams.map(makeRow(l10n('measured-params'), item => paramTitle(item), item => '')));
             
             fillSelector(clearEl(getEl('chartDataSelector')), database.measuredParams.map(function(val){
                 return {
@@ -133,7 +136,7 @@ See the License for the specific language governing permissions and
                 return {
                     x: item[changedParam.name],
                     y: item[measuredParam.name],
-                    toolTipContent: strFormat('{0}<br/>Проход: {1}<br/> {2}: {3}<br/>{4}: {5}',[measuredParam.name, item.passId, paramTitle(changedParam), item[changedParam.name], paramTitle(measuredParam), item[measuredParam.name]])
+                    toolTipContent: L10n.format('performance','tooltip-schema',[measuredParam.name, item.passId, paramTitle(changedParam), item[changedParam.name], paramTitle(measuredParam), item[measuredParam.name]])
                 }
             })
         }, passes);

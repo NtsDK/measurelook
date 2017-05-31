@@ -21,25 +21,20 @@ See the License for the specific language governing permissions and
 var FileUtils = {};
 
 FileUtils.init = function (callback) {
-    "use strict";
     FileUtils.callback = callback;
 };
 
 FileUtils.makeNewBase = function () {
-    "use strict";
     if(Utils.confirm(getL10n("utils-new-base-warning"))) {
-        "use strict";
         DBMS.setDatabase(CommonUtils.clone(EmptyBase.data), FileUtils.callback);
     }
 };
 
 FileUtils.openHelp = function () {
-    "use strict";
     window.open("doc/nims.html");
 };
 
 FileUtils.readSingleFile = function (evt) {
-    "use strict";
     // Retrieve the first (and only!) File from the FileList object
     var f = evt.target.files[0];
 
@@ -58,14 +53,13 @@ FileUtils.setDatabase = (contents) => {
   try {
       var database = JSON.parse(contents);
   } catch(e){
-      Utils.alert('Ошибка при разборе файла в JSON: ' + e);
+      Utils.alert(L10n.format('performance','json-parse-error', [e]));
       return
   }
   DBMS.setDatabase(database, FileUtils.callback);
 };
 
 FileUtils.saveFile = function () {
-    "use strict";
     DBMS.getDatabase(function(err, database){
       if(err) {Utils.handleError(err); return;}
       FileUtils.json2File(database, "measurelook-base.json");
@@ -73,12 +67,10 @@ FileUtils.saveFile = function () {
 };
 
 FileUtils.json2File = function (str, fileName) {
-    "use strict";
     FileUtils.str2File(JSON.stringify(str, null, '  '), fileName);
 };
 
 FileUtils.str2File = function (str, fileName) {
-    "use strict";
     var blob = new Blob([ str ], {
         type : "text/plain;charset=utf-8"
     });

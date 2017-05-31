@@ -34,6 +34,7 @@ See the License for the specific language governing permissions and
         }
         if(data.version === "0.2.0"){
             data.name = "";
+            data.timestamp = "";
             data.version = "0.3.0";
         }
         return data;

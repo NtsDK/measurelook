@@ -74,6 +74,15 @@ L10n.toggleL10n = function(){
     PageManager.currentView.refresh();
 };
 
+
+L10n.format = R.curry(function(namespace, name, args){
+    return strFormat(L10n.get(namespace, name), args);
+});
+
+L10n.get = R.curry(function(namespace, name){
+    return L10n.getValue(namespace + '-' + name);
+});
+
 L10n.getValue = function(name){
     "use strict";
     var value = L10n.dict[name];

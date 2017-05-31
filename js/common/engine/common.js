@@ -20,6 +20,10 @@ See the License for the specific language governing permissions and
 		LocalDBMS.prototype.getDatabase = function(callback){
 		    callback(null, this.bases[0]);
 		};
+		
+		LocalDBMS.prototype.getBases = function(callback){
+		    callback(null, this.bases);
+		};
 	
 		LocalDBMS.prototype.setDatabase = function(database, callback){
 		    database = Migrator.migrate(database);
