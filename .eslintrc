@@ -1,0 +1,10 @@
+{
+    "extends": "xo",
+    "globals": {
+      "DBMS": false
+    },
+    "rules": {
+      "indent": ["error", 4],
+      "brace-style": ["error", "1tbs", { "allowSingleLine": true }]
+    }
+}

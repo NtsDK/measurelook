@@ -1,3 +1,5 @@
 .project
 .settings/org.eclipse.core.resources.prefs
 .tern-project
+
+node_modules
