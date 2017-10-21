@@ -29,26 +29,24 @@ L10n.init = function(){
         return;
     }
     L10n.dictionaries = {};
-    console.log(navigator.language);
-    
+
     var processDictionary = function(dictionary){
         var processedDictionary = {};
         for(var sectionName in dictionary){
             for(var name in dictionary[sectionName]){
                 processedDictionary[sectionName+"-"+name] = dictionary[sectionName][name];
             }
-        } 
+        }
         return processedDictionary;
     };
-    
+
     for(var name in Dictionaries){
         L10n.dictionaries[name] = processDictionary(Dictionaries[name]);
     }
-    
+
 //    var lang = (navigator.languages ? navigator.languages[0] : navigator.browserLanguage).split('-')[0];
     var lang = 'ru';
-    console.log(lang);
-    
+
     if(L10n.dictionaries[lang]){
         L10n.dict = L10n.dictionaries[lang];
     } else {
@@ -104,9 +102,9 @@ L10n.onL10nChange = function(delegate){
 L10n.localizeStatic = function(){
     "use strict";
     L10n.init();
-    
+
     var elems = document.querySelectorAll("[l10n-id]");
-    
+
     var el;
 //    var sum = {};
     for (var i = 0; i < elems.length; i++) {
@@ -116,9 +114,9 @@ L10n.localizeStatic = function(){
 //        }
         addEl(clearEl(el), makeText(L10n.getValue(getAttr(el,"l10n-id"))));
     }
-    
+
 //    addEl(document.getElementsByTagName('body')[0],makeText(JSON.stringify(sum)));
-    
+
     elems = document.querySelectorAll("[l10n-placeholder-id]");
     for (var i = 0; i < elems.length; i++) {
         el = elems[i];
