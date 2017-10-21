@@ -1,0 +1,22 @@
+{
+  "name": "measurelook",
+  "version": "1.0.0",
+  "description": "При выполнении научных исследований необходимо сохранять данные проведенных вычислительных экспериментов.  Наивный подход это сохранение всей информации в неструктурированный текстовый файл. У этого подхода есть множество недостатков: - чтобы понять что содержится в файле его нужно явно прочитать - не фиксированный формат файла увеличивает время обращения к информации - данные находящиеся в файле требуют постобработки как для визуализации, так и для любых других целей",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NtsDK/measurelook.git"
+  },
+  "author": "Timofey Rechkalov",
+  "license": "Apache License 2.0",
+  "bugs": {
+    "url": "https://github.com/NtsDK/measurelook/issues"
+  },
+  "homepage": "https://github.com/NtsDK/measurelook#readme",
+  "devDependencies": {
+    "eslint": "^4.9.0"
+  }
+}
