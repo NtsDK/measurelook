@@ -1,4 +1,4 @@
-Copyright 2016 Timofey Rechkalov <ntsdk@yandex.ru>
+Copyright 2017 Timofey Rechkalov <ntsdk@yandex.ru>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,5 +12,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
    limitations under the License. 
    
-This project use third party libraries: jQuery, canvasjs, Chart, ramda, 
-select2 and bootstrap.
+This project use third party libraries: jQuery, Vis.js, Date Format, 
+JSZip, FileSaver.js, docxtemplater.
