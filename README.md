@@ -35,7 +35,7 @@ The results of the experiment are saved in the JSON file in the following format
   - raw, object - arbitrary data about the run that you want to save. For example, in the future to recheck the values ​​of the measured parameters
 - version, string - version of the format. The system has a built-in migrator that automatically updates files in the old format to the new one to ensure backward compatibility.
 
-[Example file] (https://github.com/NtsDK/measurelook/wiki/Measurelook-file-example)
+[Example file](https://github.com/NtsDK/measurelook/wiki/Measurelook-file-example)
 
 # Measurelook preview
 
