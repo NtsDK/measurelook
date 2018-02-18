@@ -10,13 +10,13 @@ To solve these problems, a special file format and visualization mechanism was d
 
 # Measurelook format
 
-The results of the experiment are saved in the JSON file in the following format (version 0.2.0):
+The results of the experiment are saved in the JSON file in the following format (version 0.3.0):
 - meta, object - description of the experiment in an arbitrary format.
 - constantParams, array - array of unchanged parameters of the algorithm
   - name, string - name of the parameter
   - units, string - units of measurement of the parameter
   - value, number or string - the value of the constant
-- changedParams, array - array of variable algorithm parameters
+- changedParams, array - array of changed algorithm parameters
   - name, string - name of the parameter
   - units, string - units of measurement of the parameter
 - measuredParams, array - array of measured parameters of the algorithm
@@ -28,12 +28,14 @@ The results of the experiment are saved in the JSON file in the following format
     - type, "indirect" - an indirect parameter that is the sum of several direct parameters
     - sumOf, array of strings - names of direct parameters
 - measures, object - data for each dimension. Store by measureKey (see example)
-  - measureKey, string - the unique key of each dimension. It is recommended to collect it as a set of all parameters to be changed + run number.
-  - passId, number - run number
+  - measureKey, string - the unique key of each measurement. It is recommended to build it as a set of all parameters to be changed + pass number.
+  - passId, number - pass number
   - changedParams.name, number - the values ​​of all the changed parameters, fixed for the run time
   - measuredParams.name, number - the values ​​of all the measured parameters received during the run
-  - raw, object - arbitrary data about the run that you want to save. For example, in the future to recheck the values ​​of the measured parameters
-- version, string - version of the format. The system has a built-in migrator that automatically updates files in the old format to the new one to ensure backward compatibility.
+  - raw, object - arbitrary data about the pass that you want to save. For example, in the future to recheck the values ​​of the measured parameters
+- version, string - version of the format. The system has a built-in migrator that automatically updates files from the old format to the new one to ensure backward compatibility.
+- name, string - experiment name. Added in format but not used in this moment.
+- timestamp, string - time of the experiment. You can specify it in free form. Added in format but not used in this moment.
 
 [Example file](https://github.com/NtsDK/measurelook/wiki/Measurelook-file-example)
 
