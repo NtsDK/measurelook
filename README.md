@@ -52,7 +52,7 @@ When you download the database will be updated with the migrator to the current 
 After the migrator, the database is validated using the JSON schema. If an error is detected, an error message will be displayed.
 Since a lot can be found in the error database, they are all displayed in the browser console in the current implementation.
 
-#Examples
+# Examples
 
 You can run examples of computational experiments that return the result in the Measurelook format.
 Use - open example.html in your browser and follow the instructions.
